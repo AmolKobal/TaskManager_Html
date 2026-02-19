@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+    <h1>Task Manager</h1>
+
+    <section class="task-form">
+        <input id="name" placeholder="Task Name" />
+        <input id="description" placeholder="Description" />
+        <input id="link" placeholder="Link" />
+
+        <select id="status">
+            <option value="Pending">Pending</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+        </select>
+
+        <label>Start Date</label>
+        <input id="startDate" type="date" />
+
+        <label>End Date</label>
+        <input id="endDate" type="date" />
+
+        <button id="addTaskBtn">Add Task</button>
+    </section>
+
+    <section class="controls">
+        <input id="searchName" placeholder="Search by Name" />
+
+        <select id="searchStatus">
+            <option value="">All Status</option>
+            <option value="Pending">Pending</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+        </select>
+
+        <select id="sortBy">
+            <option value="">No Sorting</option>
+            <option value="status">Sort by Status</option>
+            <option value="startDate">Sort by Start Date</option>
+            <option value="endDate">Sort by End Date</option>
+        </select>
+    </section>
+
+    <section>
+        <ul id="taskList"></ul>
+    </section>
+
+    <script src="dist/app.js"></script>
+</body>
+
+</html>

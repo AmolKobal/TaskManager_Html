@@ -1,0 +1,29 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 30px;
+}
+
+.task-form input,
+select {
+    display: block;
+    margin: 8px 0;
+    padding: 6px;
+    width: 300px;
+}
+
+button {
+    padding: 8px 12px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.task {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.comments {
+    margin-top: 10px;
+    padding-left: 15px;
+}
