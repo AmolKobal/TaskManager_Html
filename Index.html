@@ -1,72 +1,76 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <title>Task Dashboard</title>
     <link rel="stylesheet" href="styles.css" />
-  </head>
+</head>
 
-  <body>
+<body>
     <header>
-      <h1>📋 Task Dashboard</h1>
-      <button id="openModalBtn">+ Add Task</button>
+        <h1>📋 Task Dashboard</h1>
+        <button id="openModalBtn">+ Add Task</button>
     </header>
 
-    <button id="toggleViewBtn">Toggle Cards/Table</button>
-    <button id="kanbanViewBtn">Kanban View</button>
+    <section style="padding: 8px 25px;">
+        <button id="toggleViewBtn">Toggle Cards/Table</button>
+        <button id="kanbanViewBtn">Kanban View</button>
+    </section>
 
     <section class="controls">
-      <input id="searchName" placeholder="Search by Name" />
+        <input id="searchName" placeholder="Search by Name" />
 
-      <select id="searchStatus">
-        <option value="">All Status</option>
-        <option>Pending</option>
-        <option>In Progress</option>
-        <option>Completed</option>
-      </select>
+        <select id="searchStatus">
+            <option value="">All Status</option>
+            <option>Pending</option>
+            <option>In Progress</option>
+            <option>Completed</option>
+        </select>
 
-      <select id="sortBy">
-        <option value="">Sort By</option>
-        <option value="status">Status</option>
-        <option value="startDate">Start Date</option>
-        <option value="endDate">End Date</option>
-      </select>
+        <select id="sortBy">
+            <option value="">Sort By</option>
+            <option value="status">Status</option>
+            <option value="startDate">Start Date</option>
+            <option value="endDate">End Date</option>
+        </select>
     </section>
 
     <section id="taskContainer" class="cards-view"></section>
 
     <!-- Modal -->
     <div id="taskModal" class="modal hidden">
-      <div class="modal-content">
-        <h2 id="modalTitle">Add Task</h2>
+        <div class="modal-content">
+            <h2 id="modalTitle">Add Task</h2>
 
-        <input id="name" placeholder="Task Name" />
-        <small class="error" id="nameError"></small>
+            <input id="name" placeholder="Task Name" />
+            <small class="error" id="nameError"></small>
 
-        <input id="description" placeholder="Description" />
-        <input id="link" placeholder="Link" />
+            <input id="description" placeholder="Description" />
+            <input id="link" placeholder="Link" />
 
-        <select id="status">
-          <option>Pending</option>
-          <option>In Progress</option>
-          <option>Completed</option>
-        </select>
+            <select id="status">
+                <option>Pending</option>
+                <option>In Progress</option>
+                <option>Completed</option>
+            </select>
 
-        <label>Start Date</label>
-        <input id="startDate" type="date" />
-        <small class="error" id="startError"></small>
+            <label>Start Date</label>
+            <input id="startDate" type="date" />
+            <small class="error" id="startError"></small>
 
-        <label>End Date</label>
-        <input id="endDate" type="date" />
-        <small class="error" id="endError"></small>
+            <label>End Date</label>
+            <input id="endDate" type="date" />
+            <small class="error" id="endError"></small>
 
-        <div class="modal-actions">
-          <button id="saveTaskBtn">Save</button>
-          <button id="closeModalBtn">Cancel</button>
+            <div class="modal-actions">
+                <button id="saveTaskBtn">Save</button>
+                <button id="closeModalBtn">Cancel</button>
+            </div>
         </div>
-      </div>
     </div>
 
     <script src="dist/app.js"></script>
-  </body>
+</body>
+
 </html>
