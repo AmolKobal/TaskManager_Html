@@ -21,6 +21,7 @@ document.getElementById("toggleViewBtn").onclick = () => toggleView();
 document.getElementById("searchName").oninput = renderTasks;
 document.getElementById("searchStatus").onchange = renderTasks;
 document.getElementById("sortBy").onchange = renderTasks;
+let kanbanView = false;
 function saveToStorage() {
     localStorage.setItem("tasks", JSON.stringify(tasks));
 }
@@ -132,11 +133,80 @@ function renderTasks() {
     const sortBy = document.getElementById("sortBy").value;
     let filtered = tasks.filter(t => t.name.toLowerCase().includes(searchName) &&
         (!searchStatus || t.status === searchStatus));
-    if (sortBy) {
+    if (sortBy && !kanbanView) {
         filtered.sort((a, b) => a[sortBy].localeCompare(b[sortBy]));
     }
     container.innerHTML = "";
-    container.className = cardsView ? "cards-view" : "";
+    if (kanbanView) {
+        renderKanban(filtered);
+    }
+    else {
+        container.className = cardsView ? "cards-view" : "";
+        renderCards(filtered);
+    }
+}
+function renderKanban(filtered) {
+    container.className = "kanban-board";
+    const statuses = ["Pending", "In Progress", "Completed"];
+    statuses.forEach(status => {
+        const column = document.createElement("div");
+        column.className = "kanban-column";
+        column.innerHTML = `
+      <h3>${status}</h3>
+      <div class="kanban-dropzone" data-status="${status}"></div>
+    `;
+        container.appendChild(column);
+    });
+    filtered.forEach(task => {
+        const card = document.createElement("div");
+        card.className = "task-card";
+        card.draggable = true;
+        card.dataset.id = task.id.toString();
+        const progress = getProgress(task.status);
+        const progressClass = getProgressClass(task.status);
+        const alert = getDueDateAlert(task.endDate);
+        card.innerHTML = `
+      <strong>${task.name}</strong>
+      <div class="progress-container">
+        <div class="progress-bar ${progressClass}" style="width:${progress}%"></div>
+      </div>
+      <small>📅 ${task.endDate || "-"}</small>
+      ${alert ? `<div class="alert ${alert.type}">${alert.text}</div>` : ""}
+    `;
+        addKanbanDragHandlers(card);
+        const zone = container.querySelector(`[data-status="${task.status}"]`);
+        zone.appendChild(card);
+    });
+    addKanbanDropzones();
+}
+function addKanbanDragHandlers(card) {
+    card.addEventListener("dragstart", () => {
+        card.classList.add("dragging");
+    });
+    card.addEventListener("dragend", () => {
+        card.classList.remove("dragging");
+        saveToStorage();
+    });
+}
+function addKanbanDropzones() {
+    const zones = document.querySelectorAll(".kanban-dropzone");
+    zones.forEach(zone => {
+        zone.addEventListener("dragover", e => e.preventDefault());
+        zone.addEventListener("drop", () => {
+            const dragging = document.querySelector(".dragging");
+            if (!dragging)
+                return;
+            const taskId = Number(dragging.dataset.id);
+            const newStatus = zone.dataset.status;
+            const task = tasks.find(t => t.id === taskId);
+            task.status = newStatus;
+            saveToStorage();
+            renderTasks();
+        });
+    });
+}
+function renderCards(filtered) {
+    container.className = "cards-view";
     filtered.forEach(task => {
         const div = document.createElement("div");
         div.className = "task-card";
@@ -146,34 +216,22 @@ function renderTasks() {
         const progressClass = getProgressClass(task.status);
         const alert = getDueDateAlert(task.endDate);
         div.innerHTML = `
-            <strong>${task.name}</strong>
-            <span class="status ${task.status.replace(" ", "\\ ")}">${task.status}</span>
+      <strong>${task.name}</strong>
+      <span class="status ${task.status.replace(" ", "\\ ")}">${task.status}</span>
 
-            <div class="progress-container">
-                <div class="progress-bar ${progressClass}" style="width:${progress}%"></div>
-            </div>
+      <div class="progress-container">
+        <div class="progress-bar ${progressClass}" style="width:${progress}%"></div>
+      </div>
 
-            <p>${task.description}</p>
-            <small>📅 ${task.startDate} → ${task.endDate || "-"}</small>
+      <p>${task.description}</p>
+      <small>📅 ${task.startDate} → ${task.endDate || "-"}</small>
+      ${alert ? `<div class="alert ${alert.type}">${alert.text}</div>` : ""}
 
-            ${alert ? `<div class="alert ${alert.type}">${alert.text}</div>` : ""}
-
-            <div>
-                <button onclick="editTask(${task.id})">Edit</button>
-                <button onclick="deleteTask(${task.id})">Delete</button>
-            </div>
-
-            <div class="comments">
-                <input id="comment-${task.id}" placeholder="Add comment"/>
-                <button onclick="addComment(${task.id})">Add</button>
-                ${task.comments.map(c => `
-                <div class="comment">
-                    ${c.text}
-                    <div class="timestamp">${c.timestamp}</div>
-                </div>
-                `).join("")}
-            </div>
-            `;
+      <div>
+        <button onclick="editTask(${task.id})">Edit</button>
+        <button onclick="deleteTask(${task.id})">Delete</button>
+      </div>
+    `;
         addDragAndDropHandlers(div);
         container.appendChild(div);
     });
@@ -239,3 +297,11 @@ function getDueDateAlert(endDate) {
     }
     return null;
 }
+document.getElementById("kanbanViewBtn").onclick = () => {
+    kanbanView = !kanbanView;
+    renderTasks();
+};
+document.getElementById("kanbanViewBtn").onclick = () => {
+    kanbanView = !kanbanView;
+    renderTasks();
+};

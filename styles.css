@@ -154,3 +154,39 @@ select {
 .alert.upcoming {
     color: #f59e0b;
 }
+
+.kanban-board {
+    display: flex;
+    gap: 15px;
+    padding: 20px;
+    overflow-x: auto;
+}
+
+.kanban-column {
+    background: #e2e8f0;
+    border-radius: 10px;
+    padding: 10px;
+    min-width: 300px;
+    flex-shrink: 0;
+}
+
+.kanban-column h3 {
+    margin-top: 0;
+    text-align: center;
+}
+
+.kanban-dropzone {
+    min-height: 400px;
+}
+
+.task-card {
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.task-card.dragging {
+    opacity: 0.5;
+}
