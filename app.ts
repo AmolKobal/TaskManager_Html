@@ -262,21 +262,21 @@ function renderCards(filtered: Task[]) {
         const alert = getDueDateAlert(task.endDate);
 
         div.innerHTML = `
-      <strong>${task.name}</strong>
-      <span class="status ${task.status.replace(" ", "\\ ")}">${task.status}</span>
+            <strong>${task.name}</strong>
+            <span class="status ${task.status.replace(" ", "")}">${task.status}</span>
 
-      <div class="progress-container">
-        <div class="progress-bar ${progressClass}" style="width:${progress}%"></div>
-      </div>
+            <div class="progress-container">
+                <div class="progress-bar ${progressClass}" style="width:${progress}%"></div>
+            </div>
 
-      <p>${task.description}</p>
-      <small>📅 ${task.startDate} → ${task.endDate || "-"}</small>
-      ${alert ? `<div class="alert ${alert.type}">${alert.text}</div>` : ""}
+            <p>${task.description}</p>
+            <small>📅 ${task.startDate} → ${task.endDate || "-"}</small>
+            ${alert ? `<div class="alert ${alert.type}">${alert.text}</div>` : ""}
 
-      <div>
-        <button onclick="editTask(${task.id})">Edit</button>
-        <button onclick="deleteTask(${task.id})">Delete</button>
-      </div>
+            <div>
+                <button onclick="editTask(${task.id})">Edit</button>
+                <button onclick="deleteTask(${task.id})">Delete</button>
+            </div>
     `;
 
         addDragAndDropHandlers(div);
@@ -457,9 +457,9 @@ function renderKanbanColumns(parent: HTMLElement, laneTasks: Task[]) {
 
     const statuses = ["Pending", "In Progress", "Completed"];
     const statuses_class: { [key: string]: string } = {
-        "Pending": "pending",
-        "In Progress": "inProgress",
-        "Completed": "completed"
+        "Pending": "kanban-pending",
+        "In Progress": "kanban-inProgress",
+        "Completed": "kanban-completed"
     };
 
     statuses.forEach((status) => {
@@ -537,3 +537,25 @@ function addKanbanDropzones(board: HTMLElement) {
         });
     });
 }
+
+const themeToggleBtn = document.getElementById("themeToggleBtn")!;
+
+function loadTheme() {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+        document.body.classList.add("dark");
+        themeToggleBtn.textContent = "☀️";
+    }
+}
+
+function toggleTheme() {
+    document.body.classList.toggle("dark");
+
+    const isDark = document.body.classList.contains("dark");
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+
+    themeToggleBtn.textContent = isDark ? "☀️" : "🌙";
+}
+
+themeToggleBtn.addEventListener("click", toggleTheme);
+loadTheme();

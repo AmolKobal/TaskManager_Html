@@ -1,118 +1,128 @@
-/* ========== Global ========== */
+/* ========== THEME VARIABLES ========== */
 
-* {
-    box-sizing: border-box;
+:root {
+    --bg-main: #f1f5f9;
+    --bg-card: rgba(255, 255, 255, 0.7);
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border-glass: rgba(255, 255, 255, 0.4);
+    --shadow-soft: 0 8px 30px rgba(0, 0, 0, 0.08);
+    --accent: #3b82f6;
 }
+
+body.dark {
+    --bg-main: #0f172a;
+    --bg-card: rgba(30, 41, 59, 0.6);
+    --text-main: #e2e8f0;
+    --text-muted: #94a3b8;
+    --border-glass: rgba(255, 255, 255, 0.08);
+    --shadow-soft: 0 8px 30px rgba(0, 0, 0, 0.5);
+    --accent: #60a5fa;
+}
+
+/* ========== GLOBAL ========== */
 
 body {
     margin: 0;
-    font-family: "Segoe UI", Roboto, sans-serif;
-    background: #f1f5f9;
-    color: #0f172a;
+    font-family: "Segoe UI", sans-serif;
+    background: var(--bg-main);
+    color: var(--text-main);
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* ========== Header ========== */
+/* ========== GLASS HEADER ========== */
 
 header {
-    background: linear-gradient(135deg, #0f172a, #1e293b);
-    color: white;
+    backdrop-filter: blur(12px);
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-glass);
     padding: 16px 28px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-soft);
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
-header h1 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 600;
-}
-
-/* ========== Controls Bar ========== */
+/* ========== CONTROLS ========== */
 
 .controls {
     display: flex;
-    flex-wrap: wrap;
     gap: 10px;
     padding: 14px 24px;
-    background: white;
-    border-bottom: 1px solid #e2e8f0;
+    backdrop-filter: blur(10px);
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-glass);
 }
 
 .controls input,
 .controls select {
     padding: 8px 10px;
-    border-radius: 6px;
-    border: 1px solid #cbd5f5;
-    background: #f8fafc;
-    font-size: 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border-glass);
+    background: transparent;
+    color: var(--text-main);
+    transition: all 0.2s ease;
 }
 
 .controls input:focus,
 .controls select:focus {
     outline: none;
-    border-color: #3b82f6;
-    background: white;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
-/* ========== Buttons ========== */
+/* ========== BUTTONS ========== */
 
 button {
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     padding: 8px 14px;
-    font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    background: #3b82f6;
+    background: var(--accent);
     color: white;
     transition: all 0.2s ease;
 }
 
 button:hover {
-    background: #2563eb;
-    transform: translateY(-1px);
+    transform: translateY(-1px) scale(1.02);
+    box-shadow: 0 6px 18px rgba(59, 130, 246, 0.35);
 }
 
-button.secondary {
-    background: #e2e8f0;
-    color: #0f172a;
+button:active {
+    transform: scale(0.98);
 }
 
-button.secondary:hover {
-    background: #cbd5f5;
-}
-
-/* ========== Cards View ========== */
+/* ========== GLASS CARDS ========== */
 
 .cards-view {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 16px;
-    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    padding: 3px;
 }
 
 .task-card {
-    background: white;
-    border-radius: 12px;
+    backdrop-filter: blur(12px);
+    background: var(--bg-card);
+    border-radius: 14px;
+    border: 1px solid var(--border-glass);
     padding: 14px;
-    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+    box-shadow: var(--shadow-soft);
     transition: all 0.25s ease;
     animation: fadeIn 0.25s ease;
+    width: 300px;
+    margin: 5px;
 }
 
 .task-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+    transform: translateY(-4px) scale(1.01);
 }
 
-.task-card.dragging {
-    opacity: 0.5;
-    transform: rotate(1deg);
-}
-
-/* ========== Status Badge ========== */
+/* ========== STATUS BADGES ========== */
 
 .status {
     padding: 4px 10px;
@@ -120,215 +130,133 @@ button.secondary:hover {
     font-size: 11px;
     font-weight: 600;
     color: white;
-    margin-left: 6px;
 }
 
 .Pending {
-    background: #f59e0b;
+    background: linear-gradient(135deg, #f59e0b, #fbbf24);
 }
 
-.In\ Progress {
-    background: #3b82f6;
+.InProgress {
+    background: linear-gradient(135deg, #3b82f6, #60a5fa);
 }
 
 .Completed {
-    background: #10b981;
+    background: linear-gradient(135deg, #10b981, #34d399);
 }
 
-/* ========== Progress Bar ========== */
+/* ========== PROGRESS BAR ========== */
 
 .progress-container {
-    margin: 10px 0;
-    background: #e2e8f0;
-    border-radius: 6px;
     height: 8px;
+    background: rgba(148, 163, 184, 0.25);
+    border-radius: 6px;
+    margin: 10px 0;
     overflow: hidden;
 }
 
 .progress-bar {
     height: 100%;
     border-radius: 6px;
-    transition: width 0.3s ease;
+    transition: width 0.4s ease;
 }
 
-.progress-pending {
-    background: #f59e0b;
-}
-
-.progress-inprogress {
-    background: #3b82f6;
-}
-
-.progress-completed {
-    background: #10b981;
-}
-
-/* ========== Alerts ========== */
-
-.alert {
-    font-size: 12px;
-    font-weight: 500;
-    margin-top: 6px;
-}
-
-.alert.overdue {
-    color: #ef4444;
-}
-
-.alert.upcoming {
-    color: #f59e0b;
-}
-
-/* ========== Comments ========== */
-
-.comments {
-    margin-top: 10px;
-    background: #f8fafc;
-    border-radius: 8px;
-    padding: 8px;
-}
-
-.comment {
-    font-size: 13px;
-    padding: 6px 0;
-    border-bottom: 1px solid #e2e8f0;
-}
-
-.timestamp {
-    font-size: 11px;
-    color: #64748b;
-}
-
-/* ========== Modal ========== */
-
-.modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.55);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    backdrop-filter: blur(3px);
-}
-
-.modal-content {
-    background: white;
-    border-radius: 14px;
-    padding: 22px;
-    width: 420px;
-    max-width: 95%;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
-    animation: slideUp 0.25s ease;
-}
-
-.modal-content h2 {
-    margin-top: 0;
-}
-
-.modal-content input,
-.modal-content select {
-    width: 100%;
-    padding: 8px;
-    margin-top: 8px;
-    border-radius: 6px;
-    border: 1px solid #cbd5f5;
-    background: #f8fafc;
-}
-
-.modal-actions {
-    margin-top: 16px;
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
-
-.hidden {
-    display: none;
-}
-
-/* ========== Kanban Board ========== */
+/* ========== KANBAN BOARD ========== */
 
 .kanban-board {
     display: flex;
-    gap: 14px;
+    gap: 16px;
     padding: 20px;
-    overflow-x: auto;
 }
 
+/* Gradient Columns */
 .kanban-column {
-    background: #e2e8f0;
-    border-radius: 12px;
+    border-radius: 16px;
     padding: 10px;
     min-width: 300px;
-    transition: all 0.2s ease;
-
-    &.pending {
-        background: #fef3c7;
-    }
-
-    &.inProgress {
-        background: #dbeafe;
-    }
-
-    &.completed {
-        background: #d1fae5;
-    }
+    backdrop-filter: blur(12px);
+    background: linear-gradient(145deg,
+            rgba(255, 255, 255, 0.25),
+            rgba(255, 255, 255, 0.05));
+    border: 1px solid var(--border-glass);
+    transition: all 0.25s ease;
 }
 
-.kanban-column.collapsed .kanban-dropzone {
-    display: none;
+.kanban-pending {
+    background: linear-gradient(135deg, #f59e0b, #fbbf24);
 }
 
-.kanban-column-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
+.kanban-completed {
+    background: linear-gradient(135deg, #10b981, #34d399);
 }
 
-.kanban-column h3 {
-    margin: 4px 0 8px;
-    font-size: 15px;
+.kanban-inProgress {
+    background: linear-gradient(135deg, #3b82f6, #60a5fa);
 }
 
-.kanban-dropzone {
-    min-height: 120px;
+body.dark .kanban-column {
+    background: linear-gradient(145deg,
+            rgba(59, 130, 246, 0.15),
+            rgba(15, 23, 42, 0.4));
 }
 
-/* ========== Swimlanes ========== */
-
-.swimlane {
-    margin-bottom: 24px;
+/* Column Hover Glow */
+.kanban-column:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 35px rgba(59, 130, 246, 0.2);
 }
 
-.swimlane-title {
-    font-weight: 600;
-    font-size: 14px;
-    margin: 10px 20px;
-    color: #334155;
+/* ========== MICRO-INTERACTIONS ========== */
+
+.task-card {
+    position: relative;
 }
 
-/* ========== WIP Warning ========== */
-
-.wip-warning {
-    font-size: 12px;
-    text-align: center;
-    color: #ef4444;
-    margin-top: 6px;
+.task-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    background: linear-gradient(120deg,
+            transparent,
+            rgba(255, 255, 255, 0.35),
+            transparent);
 }
 
-/* ========== Drag Reorder Highlight ========== */
+.task-card:hover::after {
+    opacity: 1;
+}
 
+/* Dragging */
+.task-card.dragging {
+    transform: rotate(1deg) scale(1.03);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+}
+
+/* Drop indicator */
 .task-card.over {
-    outline: 2px dashed #3b82f6;
+    outline: 2px dashed var(--accent);
 }
 
-/* ========== Animations ========== */
+/* ========== MODAL GLASS ========== */
+
+.modal-content {
+    backdrop-filter: blur(18px);
+    background: var(--bg-card);
+    border-radius: 18px;
+    border: 1px solid var(--border-glass);
+    padding: 22px;
+    box-shadow: var(--shadow-soft);
+    animation: slideUp 0.25s ease;
+}
+
+/* ========== ANIMATIONS ========== */
 
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(4px);
+        transform: translateY(6px);
     }
 
     to {
@@ -340,29 +268,11 @@ button.secondary:hover {
 @keyframes slideUp {
     from {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(12px);
     }
 
     to {
         opacity: 1;
         transform: translateY(0);
-    }
-}
-
-/* ========== Responsive ========== */
-
-@media (max-width: 768px) {
-    .controls {
-        flex-direction: column;
-    }
-
-    header {
-        flex-direction: column;
-        gap: 10px;
-        align-items: flex-start;
-    }
-
-    .cards-view {
-        grid-template-columns: 1fr;
     }
 }
