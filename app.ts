@@ -190,27 +190,39 @@ function renderTasks() {
         div.draggable = true;
         div.dataset.id = task.id.toString();
 
-        div.innerHTML = `
-      <strong>${task.name}</strong>
-      <span class="status ${task.status.replace(" ", "\\ ")}">${task.status}</span>
-      <p>${task.description}</p>
-      <small>📅 ${task.startDate} → ${task.endDate || "-"}</small>
-      <div>
-        <button onclick="editTask(${task.id})">Edit</button>
-        <button onclick="deleteTask(${task.id})">Delete</button>
-      </div>
+        const progress = getProgress(task.status);
+        const progressClass = getProgressClass(task.status);
+        const alert = getDueDateAlert(task.endDate);
 
-      <div class="comments">
-        <input id="comment-${task.id}" placeholder="Add comment"/>
-        <button onclick="addComment(${task.id})">Add</button>
-        ${task.comments.map(c => `
-          <div class="comment">
-            ${c.text}
-            <div class="timestamp">${c.timestamp}</div>
-          </div>
-        `).join("")}
-      </div>
-    `;
+        div.innerHTML = `
+            <strong>${task.name}</strong>
+            <span class="status ${task.status.replace(" ", "\\ ")}">${task.status}</span>
+
+            <div class="progress-container">
+                <div class="progress-bar ${progressClass}" style="width:${progress}%"></div>
+            </div>
+
+            <p>${task.description}</p>
+            <small>📅 ${task.startDate} → ${task.endDate || "-"}</small>
+
+            ${alert ? `<div class="alert ${alert.type}">${alert.text}</div>` : ""}
+
+            <div>
+                <button onclick="editTask(${task.id})">Edit</button>
+                <button onclick="deleteTask(${task.id})">Delete</button>
+            </div>
+
+            <div class="comments">
+                <input id="comment-${task.id}" placeholder="Add comment"/>
+                <button onclick="addComment(${task.id})">Add</button>
+                ${task.comments.map(c => `
+                <div class="comment">
+                    ${c.text}
+                    <div class="timestamp">${c.timestamp}</div>
+                </div>
+                `).join("")}
+            </div>
+            `;
 
         addDragAndDropHandlers(div);
         container.appendChild(div);
@@ -256,3 +268,44 @@ function editTask(id: number) {
 (window as any).addComment = addComment;
 
 renderTasks();
+
+function getProgress(status: string): number {
+    switch (status) {
+        case "Pending": return 25;
+        case "In Progress": return 65;
+        case "Completed": return 100;
+        default: return 0;
+    }
+}
+
+function getProgressClass(status: string): string {
+    switch (status) {
+        case "Pending": return "progress-pending";
+        case "In Progress": return "progress-inprogress";
+        case "Completed": return "progress-completed";
+        default: return "";
+    }
+}
+
+function getDueDateAlert(endDate: string): { text: string; type: string } | null {
+    if (!endDate) return null;
+
+    const today = new Date();
+    const due = new Date(endDate);
+
+    const diffDays = Math.ceil(
+        (due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    if (diffDays < 0) {
+        return { text: "⚠ Overdue", type: "overdue" };
+    }
+
+    if (diffDays <= 2) {
+        return { text: `⏳ Due soon (${diffDays}d)`, type: "upcoming" };
+    }
+
+    return null;
+}
+
+

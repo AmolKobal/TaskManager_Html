@@ -114,3 +114,43 @@ select {
     color: red;
     font-size: 12px;
 }
+
+.progress-container {
+    margin: 8px 0;
+    background: #e5e7eb;
+    border-radius: 6px;
+    height: 8px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    border-radius: 6px;
+    transition: width 0.3s ease;
+}
+
+.progress-pending {
+    background: #f59e0b;
+}
+
+.progress-inprogress {
+    background: #3b82f6;
+}
+
+.progress-completed {
+    background: #10b981;
+}
+
+.alert {
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: 6px;
+}
+
+.alert.overdue {
+    color: #ef4444;
+}
+
+.alert.upcoming {
+    color: #f59e0b;
+}
