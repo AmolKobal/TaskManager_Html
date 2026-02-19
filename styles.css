@@ -1,29 +1,116 @@
 body {
-    font-family: Arial, sans-serif;
-    margin: 30px;
+    font-family: "Segoe UI", sans-serif;
+    margin: 0;
+    background: #f5f7fb;
 }
 
-.task-form input,
-select {
-    display: block;
-    margin: 8px 0;
-    padding: 6px;
-    width: 300px;
+header {
+    background: #1e293b;
+    color: white;
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 button {
-    padding: 8px 12px;
-    margin-top: 10px;
     cursor: pointer;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: #3b82f6;
+    color: white;
 }
 
-.task {
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin: 10px 0;
+.controls {
+    display: flex;
+    gap: 10px;
+    padding: 15px 25px;
+    background: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.controls input,
+select {
+    padding: 6px;
+}
+
+.cards-view {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
+    padding: 20px;
+}
+
+.task-card {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+.task-card.dragging {
+    opacity: 0.5;
+}
+
+.status {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    color: white;
+}
+
+.Pending {
+    background: #f59e0b;
+}
+
+.In\ Progress {
+    background: #3b82f6;
+}
+
+.Completed {
+    background: #10b981;
 }
 
 .comments {
     margin-top: 10px;
-    padding-left: 15px;
+    background: #f1f5f9;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.comment {
+    font-size: 13px;
+    border-bottom: 1px solid #ddd;
+    padding: 4px 0;
+}
+
+.timestamp {
+    font-size: 11px;
+    color: gray;
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+}
+
+.hidden {
+    display: none;
+}
+
+.error {
+    color: red;
+    font-size: 12px;
 }

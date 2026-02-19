@@ -3,54 +3,70 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>Task Manager</title>
+    <title>Task Dashboard</title>
     <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
-    <h1>Task Manager</h1>
 
-    <section class="task-form">
-        <input id="name" placeholder="Task Name" />
-        <input id="description" placeholder="Description" />
-        <input id="link" placeholder="Link" />
-
-        <select id="status">
-            <option value="Pending">Pending</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Completed">Completed</option>
-        </select>
-
-        <label>Start Date</label>
-        <input id="startDate" type="date" />
-
-        <label>End Date</label>
-        <input id="endDate" type="date" />
-
-        <button id="addTaskBtn">Add Task</button>
-    </section>
+    <header>
+        <h1>📋 Task Dashboard</h1>
+        <button id="openModalBtn">+ Add Task</button>
+    </header>
 
     <section class="controls">
         <input id="searchName" placeholder="Search by Name" />
 
         <select id="searchStatus">
             <option value="">All Status</option>
-            <option value="Pending">Pending</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Completed">Completed</option>
+            <option>Pending</option>
+            <option>In Progress</option>
+            <option>Completed</option>
         </select>
 
         <select id="sortBy">
-            <option value="">No Sorting</option>
-            <option value="status">Sort by Status</option>
-            <option value="startDate">Sort by Start Date</option>
-            <option value="endDate">Sort by End Date</option>
+            <option value="">Sort By</option>
+            <option value="status">Status</option>
+            <option value="startDate">Start Date</option>
+            <option value="endDate">End Date</option>
         </select>
+
+        <button id="toggleViewBtn">Toggle View</button>
     </section>
 
-    <section>
-        <ul id="taskList"></ul>
-    </section>
+    <section id="taskContainer" class="cards-view"></section>
+
+    <!-- Modal -->
+    <div id="taskModal" class="modal hidden">
+        <div class="modal-content">
+            <h2 id="modalTitle">Add Task</h2>
+
+            <input id="name" placeholder="Task Name" />
+            <small class="error" id="nameError"></small>
+
+            <input id="description" placeholder="Description" />
+            <input id="link" placeholder="Link" />
+
+            <select id="status">
+                <option>Pending</option>
+                <option>In Progress</option>
+                <option>Completed</option>
+            </select>
+
+            <label>Start Date</label>
+            <input id="startDate" type="date" />
+            <small class="error" id="startError"></small>
+
+            <label>End Date</label>
+            <input id="endDate" type="date" />
+            <small class="error" id="endError"></small>
+
+            <div class="modal-actions">
+                <button id="saveTaskBtn">Save</button>
+                <button id="closeModalBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
 
     <script src="dist/app.js"></script>
 </body>
