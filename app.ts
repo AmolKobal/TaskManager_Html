@@ -5,7 +5,7 @@ interface TaskComment {
 }
 
 interface Task {
-    id: number;
+    id: string;
     name: string;
     description: string;
     link: string;
@@ -24,7 +24,7 @@ const WIP_LIMITS: Record<string, number> = {
 };
 
 let tasks: Task[] = JSON.parse(localStorage.getItem("tasks") || "[]");
-let editTaskId: number | null = null;
+let editTaskId: string | null = null;
 let cardsView = true;
 
 const container = document.getElementById("taskContainer")!;
@@ -42,9 +42,23 @@ const nameError = document.getElementById("nameError")!;
 const startError = document.getElementById("startError")!;
 const endError = document.getElementById("endError")!;
 
-document.getElementById("openModalBtn")!.onclick = () => openModal();
+//document.getElementById("openModalBtn")!.onclick = () => openModal();
 document.getElementById("closeModalBtn")!.onclick = () => closeModal();
-document.getElementById("saveTaskBtn")!.onclick = () => saveTask();
+document.getElementById("saveTaskBtn")!.onclick = () => {
+    const task: Task = {
+        id: Date.now().toString(),
+        name: nameInput.value,
+        description: descInput.value,
+        link: linkInput.value,
+        status: statusInput.value,
+        startDate: startInput.value,
+        endDate: endInput.value,
+        comments: [],
+        priority: "Medium",
+        user: "Unassigned",
+    };
+    saveTask(task);
+};
 document.getElementById("toggleViewBtn")!.onclick = () => toggleView();
 
 document.getElementById("searchName")!.oninput = renderTasks;
@@ -57,31 +71,6 @@ function saveToStorage() {
     localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
-function openModal(task?: Task) {
-    modal.classList.remove("hidden");
-
-    if (task) {
-        modalTitle.textContent = "Edit Task";
-        editTaskId = task.id;
-
-        nameInput.value = task.name;
-        descInput.value = task.description;
-        linkInput.value = task.link;
-        statusInput.value = task.status;
-        startInput.value = task.startDate;
-        endInput.value = task.endDate;
-    } else {
-        modalTitle.textContent = "Add Task";
-        editTaskId = null;
-        clearForm();
-    }
-}
-
-function closeModal() {
-    modal.classList.add("hidden");
-    clearErrors();
-}
-
 function clearForm() {
     nameInput.value = "";
     descInput.value = "";
@@ -91,9 +80,12 @@ function clearForm() {
 }
 
 function clearErrors() {
-    nameError.textContent = "";
-    startError.textContent = "";
-    endError.textContent = "";
+    if (nameError)
+        nameError.textContent = "";
+    if (startError)
+        startError.textContent = "";
+    if (endError)
+        endError.textContent = "";
 }
 
 function validate(): boolean {
@@ -118,32 +110,14 @@ function validate(): boolean {
     return valid;
 }
 
-function saveTask() {
+function saveTask(task: Task) {
     if (!validate()) return;
 
     if (editTaskId) {
-        const task = tasks.find((t) => t.id === editTaskId)!;
-        task.name = nameInput.value;
-        task.description = descInput.value;
-        task.link = linkInput.value;
-        task.status = statusInput.value;
-        task.startDate = startInput.value;
-        task.endDate = endInput.value;
-        task.priority = "Medium";
-        task.user = "Unassigned";
+        const existingTask = tasks.find((t) => t.id === editTaskId)!;
+        Object.assign(existingTask, task);
     } else {
-        tasks.push({
-            id: Date.now(),
-            name: nameInput.value,
-            description: descInput.value,
-            link: linkInput.value,
-            status: statusInput.value,
-            startDate: startInput.value,
-            endDate: endInput.value,
-            comments: [],
-            priority: "Medium",
-            user: "Unassigned",
-        });
+        tasks.push(task);
     }
 
     saveToStorage();
@@ -151,13 +125,13 @@ function saveTask() {
     renderTasks();
 }
 
-function deleteTask(id: number) {
+function deleteTask(id: string) {
     tasks = tasks.filter((t) => t.id !== id);
     saveToStorage();
     renderTasks();
 }
 
-function addComment(taskId: number) {
+function addComment(taskId: string) {
     const input = document.getElementById(`comment-${taskId}`) as HTMLInputElement;
     const task = tasks.find((t) => t.id === taskId)!;
 
@@ -303,8 +277,8 @@ function addDragAndDropHandlers(card: HTMLElement) {
         const draggedId = dragging.dataset.id!;
         const targetId = card.dataset.id!;
 
-        const draggedIndex = tasks.findIndex((t) => t.id == Number(draggedId));
-        const targetIndex = tasks.findIndex((t) => t.id == Number(targetId));
+        const draggedIndex = tasks.findIndex((t) => t.id == draggedId);
+        const targetIndex = tasks.findIndex((t) => t.id == targetId);
 
         [tasks[draggedIndex], tasks[targetIndex]] = [tasks[targetIndex], tasks[draggedIndex]];
 
@@ -312,9 +286,9 @@ function addDragAndDropHandlers(card: HTMLElement) {
     });
 }
 
-function editTask(id: number) {
+function editTask(id: string) {
     const task = tasks.find((t) => t.id === id)!;
-    openModal(task);
+    openEditModal(task);
 }
 
 (window as any).deleteTask = deleteTask;
@@ -402,8 +376,8 @@ function enableReorder(card: HTMLElement) {
         const dragging = document.querySelector(".dragging") as HTMLElement;
         if (!dragging || dragging === card) return;
 
-        const draggedId = Number(dragging.dataset.id);
-        const targetId = Number(card.dataset.id);
+        const draggedId = dragging.dataset.id;
+        const targetId = card.dataset.id;
 
         const draggedIndex = tasks.findIndex((t) => t.id === draggedId);
         const targetIndex = tasks.findIndex((t) => t.id === targetId);
@@ -491,13 +465,13 @@ function renderKanbanColumns(parent: HTMLElement, laneTasks: Task[]) {
         const alert = getDueDateAlert(task.endDate);
 
         card.innerHTML = `
-      <strong>${task.name}</strong>
-      <div class="progress-container">
-        <div class="progress-bar ${progressClass}" style="width:${progress}%"></div>
-      </div>
-      <small>📅 ${task.endDate || "-"}</small>
-      ${alert ? `<div class="alert ${alert.type}">${alert.text}</div>` : ""}
-    `;
+            <strong>${task.name}</strong>
+            <div class="progress-container">
+                <div class="progress-bar ${progressClass}" style="width:${progress}%"></div>
+            </div>
+            <small>📅 ${task.endDate || "-"}</small>
+            ${alert ? `<div class="alert ${alert.type}">${alert.text}</div>` : ""}
+            `;
 
         addKanbanDragHandlers(card);
         enableReorder(card);
@@ -519,7 +493,7 @@ function addKanbanDropzones(board: HTMLElement) {
             const dragging = document.querySelector(".dragging") as HTMLElement;
             if (!dragging) return;
 
-            const taskId = Number(dragging.dataset.id);
+            const taskId = dragging.dataset.id;
             const newStatus = (zone as HTMLElement).dataset.status!;
 
             const count = tasks.filter((t) => t.status === newStatus).length;
@@ -559,3 +533,78 @@ function toggleTheme() {
 
 themeToggleBtn.addEventListener("click", toggleTheme);
 loadTheme();
+
+const openAddTaskBtn = document.getElementById("openAddTaskBtn")!;
+const closeModalBtn = document.getElementById("closeModalBtn")!;
+const taskForm = document.getElementById("taskForm") as HTMLFormElement;
+
+openAddTaskBtn.addEventListener("click", () => {
+    openAddTaskModal();
+});
+
+function openAddTaskModal() {
+    modalTitle.textContent = "Add Task";
+
+    // Clear form
+    (document.getElementById("taskId") as HTMLInputElement).value = "";
+    (document.getElementById("taskName") as HTMLInputElement).value = "";
+    (document.getElementById("taskDescription") as HTMLTextAreaElement).value = "";
+    (document.getElementById("taskLink") as HTMLInputElement).value = "";
+    (document.getElementById("taskStatus") as HTMLSelectElement).value = "Pending";
+    (document.getElementById("taskStartDate") as HTMLInputElement).value = "";
+    (document.getElementById("taskEndDate") as HTMLInputElement).value = "";
+
+    modal.classList.remove("hidden");
+}
+
+closeModalBtn.addEventListener("click", closeModal);
+
+function closeModal() {
+    modal.classList.add("hidden");
+    clearErrors();
+}
+
+modal.addEventListener("click", (e) => {
+    if (e.target === modal) closeModal();
+});
+
+taskForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const id = (document.getElementById("taskId") as HTMLInputElement).value;
+
+    const task: Task = {
+        id: id || crypto.randomUUID(),
+        name: (document.getElementById("taskName") as HTMLInputElement).value,
+        description: (document.getElementById("taskDescription") as HTMLTextAreaElement).value,
+        link: (document.getElementById("taskLink") as HTMLInputElement).value,
+        status: (document.getElementById("taskStatus") as HTMLSelectElement).value,
+        startDate: (document.getElementById("taskStartDate") as HTMLInputElement).value,
+        endDate: (document.getElementById("taskEndDate") as HTMLInputElement).value,
+        comments: []
+    };
+
+    saveTask(task)
+
+    closeModal();
+    renderTasks();
+});
+
+function openEditModal(task: Task) {
+    modalTitle.textContent = "Edit Task";
+
+    (document.getElementById("taskId") as HTMLInputElement).value = task.id.toString();
+    (document.getElementById("taskName") as HTMLInputElement).value = task.name;
+    (document.getElementById("taskDescription") as HTMLTextAreaElement).value =
+        task.description;
+    (document.getElementById("taskLink") as HTMLInputElement).value = task.link;
+    (document.getElementById("taskStatus") as HTMLSelectElement).value =
+        task.status;
+    (document.getElementById("taskStartDate") as HTMLInputElement).value =
+        task.startDate;
+    (document.getElementById("taskEndDate") as HTMLInputElement).value =
+        task.endDate;
+
+    modal.classList.remove("hidden");
+}
+

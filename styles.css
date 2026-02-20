@@ -212,7 +212,6 @@ body.dark .kanban-column {
 }
 
 .task-card::after {
-    content: "";
     position: absolute;
     inset: 0;
     border-radius: 14px;
@@ -275,4 +274,19 @@ body.dark .kanban-column {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    animation: fadeIn 0.2s ease;
+}
+
+.modal.hidden {
+    display: none;
 }

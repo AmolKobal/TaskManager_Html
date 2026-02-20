@@ -19,9 +19,23 @@ const endInput = document.getElementById("endDate");
 const nameError = document.getElementById("nameError");
 const startError = document.getElementById("startError");
 const endError = document.getElementById("endError");
-document.getElementById("openModalBtn").onclick = () => openModal();
+//document.getElementById("openModalBtn")!.onclick = () => openModal();
 document.getElementById("closeModalBtn").onclick = () => closeModal();
-document.getElementById("saveTaskBtn").onclick = () => saveTask();
+document.getElementById("saveTaskBtn").onclick = () => {
+    const task = {
+        id: Date.now().toString(),
+        name: nameInput.value,
+        description: descInput.value,
+        link: linkInput.value,
+        status: statusInput.value,
+        startDate: startInput.value,
+        endDate: endInput.value,
+        comments: [],
+        priority: "Medium",
+        user: "Unassigned",
+    };
+    saveTask(task);
+};
 document.getElementById("toggleViewBtn").onclick = () => toggleView();
 document.getElementById("searchName").oninput = renderTasks;
 document.getElementById("searchStatus").onchange = renderTasks;
@@ -29,28 +43,6 @@ document.getElementById("sortBy").onchange = renderTasks;
 let kanbanView = false;
 function saveToStorage() {
     localStorage.setItem("tasks", JSON.stringify(tasks));
-}
-function openModal(task) {
-    modal.classList.remove("hidden");
-    if (task) {
-        modalTitle.textContent = "Edit Task";
-        editTaskId = task.id;
-        nameInput.value = task.name;
-        descInput.value = task.description;
-        linkInput.value = task.link;
-        statusInput.value = task.status;
-        startInput.value = task.startDate;
-        endInput.value = task.endDate;
-    }
-    else {
-        modalTitle.textContent = "Add Task";
-        editTaskId = null;
-        clearForm();
-    }
-}
-function closeModal() {
-    modal.classList.add("hidden");
-    clearErrors();
 }
 function clearForm() {
     nameInput.value = "";
@@ -60,9 +52,12 @@ function clearForm() {
     endInput.value = "";
 }
 function clearErrors() {
-    nameError.textContent = "";
-    startError.textContent = "";
-    endError.textContent = "";
+    if (nameError)
+        nameError.textContent = "";
+    if (startError)
+        startError.textContent = "";
+    if (endError)
+        endError.textContent = "";
 }
 function validate() {
     clearErrors();
@@ -81,33 +76,15 @@ function validate() {
     }
     return valid;
 }
-function saveTask() {
+function saveTask(task) {
     if (!validate())
         return;
     if (editTaskId) {
-        const task = tasks.find((t) => t.id === editTaskId);
-        task.name = nameInput.value;
-        task.description = descInput.value;
-        task.link = linkInput.value;
-        task.status = statusInput.value;
-        task.startDate = startInput.value;
-        task.endDate = endInput.value;
-        task.priority = "Medium";
-        task.user = "Unassigned";
+        const existingTask = tasks.find((t) => t.id === editTaskId);
+        Object.assign(existingTask, task);
     }
     else {
-        tasks.push({
-            id: Date.now(),
-            name: nameInput.value,
-            description: descInput.value,
-            link: linkInput.value,
-            status: statusInput.value,
-            startDate: startInput.value,
-            endDate: endInput.value,
-            comments: [],
-            priority: "Medium",
-            user: "Unassigned",
-        });
+        tasks.push(task);
     }
     saveToStorage();
     closeModal();
@@ -234,15 +211,15 @@ function addDragAndDropHandlers(card) {
         const ids = Array.from(container.children).map((c) => c.dataset.id);
         const draggedId = dragging.dataset.id;
         const targetId = card.dataset.id;
-        const draggedIndex = tasks.findIndex((t) => t.id == Number(draggedId));
-        const targetIndex = tasks.findIndex((t) => t.id == Number(targetId));
+        const draggedIndex = tasks.findIndex((t) => t.id == draggedId);
+        const targetIndex = tasks.findIndex((t) => t.id == targetId);
         [tasks[draggedIndex], tasks[targetIndex]] = [tasks[targetIndex], tasks[draggedIndex]];
         renderTasks();
     });
 }
 function editTask(id) {
     const task = tasks.find((t) => t.id === id);
-    openModal(task);
+    openEditModal(task);
 }
 window.deleteTask = deleteTask;
 window.editTask = editTask;
@@ -316,8 +293,8 @@ function enableReorder(card) {
         const dragging = document.querySelector(".dragging");
         if (!dragging || dragging === card)
             return;
-        const draggedId = Number(dragging.dataset.id);
-        const targetId = Number(card.dataset.id);
+        const draggedId = dragging.dataset.id;
+        const targetId = card.dataset.id;
         const draggedIndex = tasks.findIndex((t) => t.id === draggedId);
         const targetIndex = tasks.findIndex((t) => t.id === targetId);
         const [moved] = tasks.splice(draggedIndex, 1);
@@ -387,13 +364,13 @@ function renderKanbanColumns(parent, laneTasks) {
         const progressClass = getProgressClass(task.status);
         const alert = getDueDateAlert(task.endDate);
         card.innerHTML = `
-      <strong>${task.name}</strong>
-      <div class="progress-container">
-        <div class="progress-bar ${progressClass}" style="width:${progress}%"></div>
-      </div>
-      <small>📅 ${task.endDate || "-"}</small>
-      ${alert ? `<div class="alert ${alert.type}">${alert.text}</div>` : ""}
-    `;
+            <strong>${task.name}</strong>
+            <div class="progress-container">
+                <div class="progress-bar ${progressClass}" style="width:${progress}%"></div>
+            </div>
+            <small>📅 ${task.endDate || "-"}</small>
+            ${alert ? `<div class="alert ${alert.type}">${alert.text}</div>` : ""}
+            `;
         addKanbanDragHandlers(card);
         enableReorder(card);
         const zone = board.querySelector(`[data-status="${task.status}"]`);
@@ -409,7 +386,7 @@ function addKanbanDropzones(board) {
             const dragging = document.querySelector(".dragging");
             if (!dragging)
                 return;
-            const taskId = Number(dragging.dataset.id);
+            const taskId = dragging.dataset.id;
             const newStatus = zone.dataset.status;
             const count = tasks.filter((t) => t.status === newStatus).length;
             if (count >= WIP_LIMITS[newStatus]) {
@@ -439,3 +416,62 @@ function toggleTheme() {
 }
 themeToggleBtn.addEventListener("click", toggleTheme);
 loadTheme();
+const openAddTaskBtn = document.getElementById("openAddTaskBtn");
+const closeModalBtn = document.getElementById("closeModalBtn");
+const taskForm = document.getElementById("taskForm");
+openAddTaskBtn.addEventListener("click", () => {
+    openAddTaskModal();
+});
+function openAddTaskModal() {
+    modalTitle.textContent = "Add Task";
+    // Clear form
+    document.getElementById("taskId").value = "";
+    document.getElementById("taskName").value = "";
+    document.getElementById("taskDescription").value = "";
+    document.getElementById("taskLink").value = "";
+    document.getElementById("taskStatus").value = "Pending";
+    document.getElementById("taskStartDate").value = "";
+    document.getElementById("taskEndDate").value = "";
+    modal.classList.remove("hidden");
+}
+closeModalBtn.addEventListener("click", closeModal);
+function closeModal() {
+    modal.classList.add("hidden");
+    clearErrors();
+}
+modal.addEventListener("click", (e) => {
+    if (e.target === modal)
+        closeModal();
+});
+taskForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const id = document.getElementById("taskId").value;
+    const task = {
+        id: id || crypto.randomUUID(),
+        name: document.getElementById("taskName").value,
+        description: document.getElementById("taskDescription").value,
+        link: document.getElementById("taskLink").value,
+        status: document.getElementById("taskStatus").value,
+        startDate: document.getElementById("taskStartDate").value,
+        endDate: document.getElementById("taskEndDate").value,
+        comments: []
+    };
+    saveTask(task);
+    closeModal();
+    renderTasks();
+});
+function openEditModal(task) {
+    modalTitle.textContent = "Edit Task";
+    document.getElementById("taskId").value = task.id.toString();
+    document.getElementById("taskName").value = task.name;
+    document.getElementById("taskDescription").value =
+        task.description;
+    document.getElementById("taskLink").value = task.link;
+    document.getElementById("taskStatus").value =
+        task.status;
+    document.getElementById("taskStartDate").value =
+        task.startDate;
+    document.getElementById("taskEndDate").value =
+        task.endDate;
+    modal.classList.remove("hidden");
+}

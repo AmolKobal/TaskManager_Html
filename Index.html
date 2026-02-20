@@ -10,7 +10,8 @@
 <body>
     <header>
         <h1>📋 Task Dashboard</h1>
-        <button id="openModalBtn">+ Add Task</button>
+        <!-- Add Task Button -->
+        <button id="openAddTaskBtn">➕ Add Task</button>
         <button id="themeToggleBtn">🌙</button>
     </header>
 
@@ -42,32 +43,50 @@
     <!-- Modal -->
     <div id="taskModal" class="modal hidden">
         <div class="modal-content">
-            <h2 id="modalTitle">Add Task</h2>
-
-            <input id="name" placeholder="Task Name" />
-            <small class="error" id="nameError"></small>
-
-            <input id="description" placeholder="Description" />
-            <input id="link" placeholder="Link" />
-
-            <select id="status">
-                <option>Pending</option>
-                <option>In Progress</option>
-                <option>Completed</option>
-            </select>
-
-            <label>Start Date</label>
-            <input id="startDate" type="date" />
-            <small class="error" id="startError"></small>
-
-            <label>End Date</label>
-            <input id="endDate" type="date" />
-            <small class="error" id="endError"></small>
-
-            <div class="modal-actions">
-                <button id="saveTaskBtn">Save</button>
-                <button id="closeModalBtn">Cancel</button>
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Task</h2>
+                <button id="closeModalBtn">✖</button>
             </div>
+
+            <form id="taskForm">
+                <input type="hidden" id="taskId" />
+
+                <label>
+                    Name
+                    <input type="text" id="taskName" required />
+                </label>
+
+                <label>
+                    Description
+                    <textarea id="taskDescription"></textarea>
+                </label>
+
+                <label>
+                    Link
+                    <input type="url" id="taskLink" />
+                </label>
+
+                <label>
+                    Status
+                    <select id="taskStatus">
+                        <option>Pending</option>
+                        <option>In Progress</option>
+                        <option>Completed</option>
+                    </select>
+                </label>
+
+                <label>
+                    Start Date
+                    <input type="date" id="taskStartDate" />
+                </label>
+
+                <label>
+                    End Date
+                    <input type="date" id="taskEndDate" />
+                </label>
+
+                <button id="saveTaskBtn">💾 Save Task</button>
+            </form>
         </div>
     </div>
 
