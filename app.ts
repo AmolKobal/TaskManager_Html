@@ -608,3 +608,87 @@ function openEditModal(task: Task) {
     modal.classList.remove("hidden");
 }
 
+
+
+const trackerModal = document.getElementById("trackerModal")!;
+const openTrackerBtn = document.getElementById("openTrackerBtn")!;
+const closeTrackerBtn = document.getElementById("closeTrackerBtn")!;
+const saveTrackerBtn = document.getElementById("saveTrackerBtn")!;
+const trackerDate = document.getElementById("trackerDate") as HTMLInputElement;
+const trackerHistory = document.getElementById("trackerHistory")!;
+
+openTrackerBtn.addEventListener("click", () => {
+    trackerModal.classList.remove("hidden");
+
+    // Default today
+    if (!trackerDate.value) {
+        trackerDate.value = new Date().toISOString().split("T")[0];
+    }
+
+    loadTrackerForDate();
+    renderTrackerHistory();
+});
+
+closeTrackerBtn.addEventListener("click", () => {
+    trackerModal.classList.add("hidden");
+});
+
+trackerDate.addEventListener("change", loadTrackerForDate);
+
+function loadTrackerForDate() {
+    const date = trackerDate.value;
+    if (!date) return;
+
+    const stored = getTrackerData();
+    const record = stored[date] || [];
+
+    document
+        .querySelectorAll("#trackerModal input[type='checkbox']")
+        .forEach((cb) => {
+            const checkbox = cb as HTMLInputElement;
+            checkbox.checked = record.includes(checkbox.value);
+        });
+}
+
+saveTrackerBtn.addEventListener("click", () => {
+    const date = trackerDate.value;
+    if (!date) {
+        alert("Select a date");
+        return;
+    }
+
+    const selected: string[] = [];
+
+    document
+        .querySelectorAll("#trackerModal input[type='checkbox']:checked")
+        .forEach((cb) => {
+            selected.push((cb as HTMLInputElement).value);
+        });
+
+    const stored = getTrackerData();
+    stored[date] = selected;
+
+    localStorage.setItem("dailyTracker", JSON.stringify(stored));
+
+    renderTrackerHistory();
+});
+
+function getTrackerData(): Record<string, string[]> {
+    return JSON.parse(localStorage.getItem("dailyTracker") || "{}");
+}
+
+function renderTrackerHistory() {
+    const stored = getTrackerData();
+
+    trackerHistory.innerHTML = "";
+
+    Object.entries(stored)
+        .sort(([a], [b]) => (a < b ? 1 : -1)) // newest first
+        .forEach(([date, items]) => {
+            const div = document.createElement("div");
+            div.className = "history-entry";
+            div.innerHTML = `<strong>${date}</strong><br/>
+                       ${items.length ? items.join(", ") : "No items completed"}`;
+            trackerHistory.appendChild(div);
+        });
+}

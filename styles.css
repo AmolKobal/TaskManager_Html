@@ -290,3 +290,54 @@ body.dark .kanban-column {
 .modal.hidden {
     display: none;
 }
+
+.form-group {
+    display: block;
+    width: 50%;
+}
+
+.closeBtn {
+    float: inline-end;
+}
+
+.tracker {
+    width: 420px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.tracker-items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 12px 0;
+}
+
+.tracker-items label {
+    background: rgba(148, 163, 184, 0.12);
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.tracker-items label:hover {
+    background: rgba(59, 130, 246, 0.15);
+}
+
+.history-entry {
+    padding: 8px;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    font-size: 13px;
+    background: rgba(148, 163, 184, 0.1);
+}
+
+.modal-header {
+    margin-bottom: 10px;
+}
+
+.modal-header span {
+    font-size: 20px;
+    font-weight: bold;
+}
