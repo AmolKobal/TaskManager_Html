@@ -31,12 +31,12 @@ const container = document.getElementById("taskContainer")!;
 const modal = document.getElementById("taskModal")!;
 const modalTitle = document.getElementById("modalTitle")!;
 
-const nameInput = document.getElementById("name") as HTMLInputElement;
-const descInput = document.getElementById("description") as HTMLInputElement;
-const linkInput = document.getElementById("link") as HTMLInputElement;
-const statusInput = document.getElementById("status") as HTMLSelectElement;
-const startInput = document.getElementById("startDate") as HTMLInputElement;
-const endInput = document.getElementById("endDate") as HTMLInputElement;
+const taskName = document.getElementById("taskName") as HTMLInputElement;
+const taskDescription = document.getElementById("taskDescription") as HTMLInputElement;
+const taskLlink = document.getElementById("taskLink") as HTMLInputElement;
+const taskStatus = document.getElementById("taskStatus") as HTMLSelectElement;
+const taskStartDate = document.getElementById("taskStartDate") as HTMLInputElement;
+const taskEndDate = document.getElementById("taskEndDate") as HTMLInputElement;
 
 const nameError = document.getElementById("nameError")!;
 const startError = document.getElementById("startError")!;
@@ -47,12 +47,12 @@ document.getElementById("closeModalBtn")!.onclick = () => closeModal();
 document.getElementById("saveTaskBtn")!.onclick = () => {
     const task: Task = {
         id: Date.now().toString(),
-        name: nameInput.value,
-        description: descInput.value,
-        link: linkInput.value,
-        status: statusInput.value,
-        startDate: startInput.value,
-        endDate: endInput.value,
+        name: taskName.value,
+        description: taskDescription.value,
+        link: taskLlink.value,
+        status: taskStatus.value,
+        startDate: taskStartDate.value,
+        endDate: taskEndDate.value,
         comments: [],
         priority: "Medium",
         user: "Unassigned",
@@ -72,11 +72,11 @@ function saveToStorage() {
 }
 
 function clearForm() {
-    nameInput.value = "";
-    descInput.value = "";
-    linkInput.value = "";
-    startInput.value = "";
-    endInput.value = "";
+    taskName.value = "";
+    taskDescription.value = "";
+    taskLlink.value = "";
+    taskStartDate.value = "";
+    taskEndDate.value = "";
 }
 
 function clearErrors() {
@@ -92,17 +92,17 @@ function validate(): boolean {
     clearErrors();
     let valid = true;
 
-    if (!nameInput.value.trim()) {
+    if (!taskName.value.trim()) {
         nameError.textContent = "Task name required";
         valid = false;
     }
 
-    if (!startInput.value) {
+    if (!taskStartDate.value) {
         startError.textContent = "Start date required";
         valid = false;
     }
 
-    if (endInput.value && endInput.value < startInput.value) {
+    if (taskEndDate.value && taskEndDate.value < taskStartDate.value) {
         endError.textContent = "End date must be after start date";
         valid = false;
     }
@@ -114,7 +114,7 @@ function saveTask(task: Task) {
     if (!validate()) return;
 
     if (editTaskId) {
-        const existingTask = tasks.find((t) => t.id === editTaskId)!;
+        const existingTask = tasks.find((t) => t.id.toString() === editTaskId?.toString())!;
         Object.assign(existingTask, task);
     } else {
         tasks.push(task);
@@ -244,6 +244,9 @@ function renderCards(filtered: Task[]) {
             </div>
 
             <p>${task.description}</p>
+
+            <a href="${task.link}" target="_blank">${task.link}</a><br/>
+
             <small>📅 ${task.startDate} → ${task.endDate || "-"}</small>
             ${alert ? `<div class="alert ${alert.type}">${alert.text}</div>` : ""}
 
@@ -287,7 +290,8 @@ function addDragAndDropHandlers(card: HTMLElement) {
 }
 
 function editTask(id: string) {
-    const task = tasks.find((t) => t.id === id)!;
+    const task = tasks.find((t) => t.id == id)!;
+    editTaskId = id;
     openEditModal(task);
 }
 
@@ -574,7 +578,7 @@ taskForm.addEventListener("submit", (e) => {
     const id = (document.getElementById("taskId") as HTMLInputElement).value;
 
     const task: Task = {
-        id: id || crypto.randomUUID(),
+        id: Date.now().toString(),
         name: (document.getElementById("taskName") as HTMLInputElement).value,
         description: (document.getElementById("taskDescription") as HTMLTextAreaElement).value,
         link: (document.getElementById("taskLink") as HTMLInputElement).value,
