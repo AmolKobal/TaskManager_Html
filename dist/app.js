@@ -10,12 +10,12 @@ let cardsView = true;
 const container = document.getElementById("taskContainer");
 const modal = document.getElementById("taskModal");
 const modalTitle = document.getElementById("modalTitle");
-const nameInput = document.getElementById("name");
-const descInput = document.getElementById("description");
-const linkInput = document.getElementById("link");
-const statusInput = document.getElementById("status");
-const startInput = document.getElementById("startDate");
-const endInput = document.getElementById("endDate");
+const taskName = document.getElementById("taskName");
+const taskDescription = document.getElementById("taskDescription");
+const taskLlink = document.getElementById("taskLink");
+const taskStatus = document.getElementById("taskStatus");
+const taskStartDate = document.getElementById("taskStartDate");
+const taskEndDate = document.getElementById("taskEndDate");
 const nameError = document.getElementById("nameError");
 const startError = document.getElementById("startError");
 const endError = document.getElementById("endError");
@@ -24,12 +24,12 @@ document.getElementById("closeModalBtn").onclick = () => closeModal();
 document.getElementById("saveTaskBtn").onclick = () => {
     const task = {
         id: Date.now().toString(),
-        name: nameInput.value,
-        description: descInput.value,
-        link: linkInput.value,
-        status: statusInput.value,
-        startDate: startInput.value,
-        endDate: endInput.value,
+        name: taskName.value,
+        description: taskDescription.value,
+        link: taskLlink.value,
+        status: taskStatus.value,
+        startDate: taskStartDate.value,
+        endDate: taskEndDate.value,
         comments: [],
         priority: "Medium",
         user: "Unassigned",
@@ -45,11 +45,11 @@ function saveToStorage() {
     localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 function clearForm() {
-    nameInput.value = "";
-    descInput.value = "";
-    linkInput.value = "";
-    startInput.value = "";
-    endInput.value = "";
+    taskName.value = "";
+    taskDescription.value = "";
+    taskLlink.value = "";
+    taskStartDate.value = "";
+    taskEndDate.value = "";
 }
 function clearErrors() {
     if (nameError)
@@ -62,15 +62,15 @@ function clearErrors() {
 function validate() {
     clearErrors();
     let valid = true;
-    if (!nameInput.value.trim()) {
+    if (!taskName.value.trim()) {
         nameError.textContent = "Task name required";
         valid = false;
     }
-    if (!startInput.value) {
+    if (!taskStartDate.value) {
         startError.textContent = "Start date required";
         valid = false;
     }
-    if (endInput.value && endInput.value < startInput.value) {
+    if (taskEndDate.value && taskEndDate.value < taskStartDate.value) {
         endError.textContent = "End date must be after start date";
         valid = false;
     }
@@ -80,7 +80,7 @@ function saveTask(task) {
     if (!validate())
         return;
     if (editTaskId) {
-        const existingTask = tasks.find((t) => t.id === editTaskId);
+        const existingTask = tasks.find((t) => t.id.toString() === (editTaskId === null || editTaskId === void 0 ? void 0 : editTaskId.toString()));
         Object.assign(existingTask, task);
     }
     else {
@@ -183,6 +183,9 @@ function renderCards(filtered) {
             </div>
 
             <p>${task.description}</p>
+
+            <a href="${task.link}" target="_blank">${task.link}</a><br/>
+
             <small>📅 ${task.startDate} → ${task.endDate || "-"}</small>
             ${alert ? `<div class="alert ${alert.type}">${alert.text}</div>` : ""}
 
@@ -218,7 +221,8 @@ function addDragAndDropHandlers(card) {
     });
 }
 function editTask(id) {
-    const task = tasks.find((t) => t.id === id);
+    const task = tasks.find((t) => t.id == id);
+    editTaskId = id;
     openEditModal(task);
 }
 window.deleteTask = deleteTask;
@@ -447,7 +451,7 @@ taskForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const id = document.getElementById("taskId").value;
     const task = {
-        id: id || crypto.randomUUID(),
+        id: Date.now().toString(),
         name: document.getElementById("taskName").value,
         description: document.getElementById("taskDescription").value,
         link: document.getElementById("taskLink").value,
@@ -474,4 +478,69 @@ function openEditModal(task) {
     document.getElementById("taskEndDate").value =
         task.endDate;
     modal.classList.remove("hidden");
+}
+const trackerModal = document.getElementById("trackerModal");
+const openTrackerBtn = document.getElementById("openTrackerBtn");
+const closeTrackerBtn = document.getElementById("closeTrackerBtn");
+const saveTrackerBtn = document.getElementById("saveTrackerBtn");
+const trackerDate = document.getElementById("trackerDate");
+const trackerHistory = document.getElementById("trackerHistory");
+openTrackerBtn.addEventListener("click", () => {
+    trackerModal.classList.remove("hidden");
+    // Default today
+    if (!trackerDate.value) {
+        trackerDate.value = new Date().toISOString().split("T")[0];
+    }
+    loadTrackerForDate();
+    renderTrackerHistory();
+});
+closeTrackerBtn.addEventListener("click", () => {
+    trackerModal.classList.add("hidden");
+});
+trackerDate.addEventListener("change", loadTrackerForDate);
+function loadTrackerForDate() {
+    const date = trackerDate.value;
+    if (!date)
+        return;
+    const stored = getTrackerData();
+    const record = stored[date] || [];
+    document
+        .querySelectorAll("#trackerModal input[type='checkbox']")
+        .forEach((cb) => {
+        const checkbox = cb;
+        checkbox.checked = record.includes(checkbox.value);
+    });
+}
+saveTrackerBtn.addEventListener("click", () => {
+    const date = trackerDate.value;
+    if (!date) {
+        alert("Select a date");
+        return;
+    }
+    const selected = [];
+    document
+        .querySelectorAll("#trackerModal input[type='checkbox']:checked")
+        .forEach((cb) => {
+        selected.push(cb.value);
+    });
+    const stored = getTrackerData();
+    stored[date] = selected;
+    localStorage.setItem("dailyTracker", JSON.stringify(stored));
+    renderTrackerHistory();
+});
+function getTrackerData() {
+    return JSON.parse(localStorage.getItem("dailyTracker") || "{}");
+}
+function renderTrackerHistory() {
+    const stored = getTrackerData();
+    trackerHistory.innerHTML = "";
+    Object.entries(stored)
+        .sort(([a], [b]) => (a < b ? 1 : -1)) // newest first
+        .forEach(([date, items]) => {
+        const div = document.createElement("div");
+        div.className = "history-entry";
+        div.innerHTML = `<strong>${date}</strong><br/>
+                       ${items.length ? items.join(", ") : "No items completed"}`;
+        trackerHistory.appendChild(div);
+    });
 }

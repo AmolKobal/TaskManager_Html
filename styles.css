@@ -116,6 +116,11 @@ button:active {
     animation: fadeIn 0.25s ease;
     width: 300px;
     margin: 5px;
+    border-left: solid 3px#46b132;
+}
+
+body.dark .task-card {
+    border-left: solid 3px #32b0cd;
 }
 
 .task-card:hover {
@@ -295,6 +300,7 @@ body.dark .kanban-column {
 .form-group {
     display: block;
     width: 50%;
+    padding-top: 5px;
 }
 
 .closeBtn {
@@ -345,4 +351,8 @@ body.dark .kanban-column {
 
 .form-group label {
     display: block;
+}
+
+body.dark a {
+    color: #12931d !important;
 }
