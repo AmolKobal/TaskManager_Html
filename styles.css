@@ -368,3 +368,13 @@ body.dark a {
         opacity: 0;
     }
 }
+
+.section-task-count {
+    padding-top: 5px;
+}
+
+.task-count {
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+}

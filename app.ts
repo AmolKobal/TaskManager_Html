@@ -259,6 +259,8 @@ function renderCards(filtered: Task[]) {
         addDragAndDropHandlers(div);
         container.appendChild(div);
     });
+
+    document.getElementById("taskCount")!.innerHTML = `Total ${filtered.length} Task(s)`;
 }
 
 function addDragAndDropHandlers(card: HTMLElement) {
